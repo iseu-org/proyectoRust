@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GitHub Studio | Profile Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #040d16;
+      --card-bg: #0d1117;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --success: #238636;
+      --text-main: #e6edf3;
+      --text-dim: #8b949e;
+      --glass: rgba(22, 27, 34, 0.8);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      background-image: radial-gradient(circle at top right, #161b22 0%, #040d16 100%);
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--text-main);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 450px;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .input-group {
+      position: relative;
+      display: flex;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .input-group:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+    }
+
+    input {
+      flex: 1;
+      padding: 12px 16px;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    button {
+      padding: 0 20px;
+      background: var(--accent);
+      color: #0d1117;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    button:active { transform: translateY(0); }
+
+    button:disabled { background: #30363d; color: var(--text-dim); cursor: not-allowed; }
+
+    /* Card Pro Style */
+    .card {
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      margin-top: 20px;
+      display: none;
+      animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+    }
+
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 4px solid var(--card-bg);
+      box-shadow: 0 0 20px rgba(88, 166, 255, 0.15);
+    }
+
+    .username-badge {
+      background: rgba(88, 166, 255, 0.1);
+      color: var(--accent);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .full-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .bio {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      margin: 20px 0;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 25px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-box {
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+      border-radius: 12px;
+      transition: background 0.3s;
+    }
+
+    .stat-box:hover { background: rgba(255,255,255,0.06); }
+
+    .stat-box span {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .stat-box small {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+    }
+
+    .error-msg {
+      background: rgba(248, 81, 73, 0.1);
+      border: 1px solid rgba(248, 81, 73, 0.4);
+      color: #f85149;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-top: 15px;
+      display: none;
+      text-align: center;
+    }
+
+    .shimmer {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>GitHub Profile Explorer</h1>
+    </header>
+
+    <div class="input-group">
+      <input type="password" id="tokenInput" placeholder="Personal Access Token..." />
+      <button id="searchBtn" onclick="fetchUser()">Analyze</button>
+    </div>
+
+    <div class="shimmer" id="loader">Fetching data from GitHub...</div>
+    <div class="error-msg" id="error"></div>
+
+    <div class="card" id="card">
+      <div class="profile-header">
+        <div class="avatar-wrapper">
+          <img id="avatar" class="avatar" src="" alt="User" />
+        </div>
+        <div class="username-badge" id="username"></div>
+        <div class="full-name" id="name"></div>
+      </div>
+
+      <div class="bio" id="bio"></div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span id="repos">0</span>
+          <small>Public</small>
+        </div>
+        <div class="stat-box">
+          <span id="followers">0</span>
+          <small>Followers</small>
+        </div>
+        <div class="stat-box">
+          <span id="following">0</span>
+          <small>Following</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchUser() {
+      const token  = document.getElementById("tokenInput").value.trim();
+      const btn    = document.getElementById("searchBtn");
+      const card   = document.getElementById("card");
+      const error  = document.getElementById("error");
+      const loader = document.getElementById("loader");
+
+      if (!token) {
+        showError("Authentication token is required");
+        return;
+      }
+
+      card.style.display   = "none";
+      error.style.display  = "none";
+      loader.style.display = "block";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`/usuario?token=${token}`);
+        
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to fetch user");
+        }
+
+        const user = await res.json();
+
+        // Rellenar datos con fallback
+        document.getElementById("avatar").src = user.avatar_url;
+        document.getElementById("username").textContent = `@${user.login}`;
+        document.getElementById("name").textContent = user.name || user.login;
+        document.getElementById("bio").textContent = user.bio || "No biography provided.";
+        document.getElementById("repos").textContent = user.public_repos;
+        document.getElementById("followers").textContent = user.followers;
+        document.getElementById("following").textContent = user.following;
+
+        card.style.display = "block";
+
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        loader.style.display = "none";
+        btn.disabled = false;
+      }
+    }
+
+    function showError(msg) {
+      const error = document.getElementById("error");
+      error.innerHTML = `<strong>Error:</strong> ${msg}`;
+      error.style.display = "block";
+    }
+
+    document.getElementById("tokenInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") fetchUser();
+    });
+  </script>
+</body>
+</html>
