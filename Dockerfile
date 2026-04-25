@@ -11,7 +11,7 @@ COPY target/x86_64-unknown-linux-musl/release/apiRust /app/apiRust
 RUN chmod +x /app/apiRust
 
 # Exponemos el puerto que usa tu API (ejemplo: 8080)
-EXPOSE 8080
+EXPOSE 10000
 
 # Comando para iniciar la API
 CMD ["/app/apiRust"]
