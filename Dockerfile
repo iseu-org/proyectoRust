@@ -1,17 +1,16 @@
-# Usamos una imagen de Linux mínima para que sea rápido y ligero
-FROM alpine:latest
+# Etapa 1: Compilación
+FROM rust:1.75-slim as builder
+WORKDIR /app
+COPY . .
+# Compilamos para release
+RUN cargo build --release
 
-# Instalamos librerías básicas por si acaso (aunque tu binario sea estático)
-RUN apk add --no-cache ca-certificates
-
-# Copiamos TU binario ya compilado desde tu carpeta target a la imagen
-COPY target/x86_64-unknown-linux-musl/release/apiRust /app/apiRust
-
-# Le damos permisos de ejecución
+# Etapa 2: Ejecución
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+# Copiamos el binario desde la etapa de compilación
+COPY --from=builder /app/target/release/apiRust /app/apiRust
 RUN chmod +x /app/apiRust
-
-# Exponemos el puerto que usa tu API (ejemplo: 8080)
 EXPOSE 10000
-
-# Comando para iniciar la API
 CMD ["/app/apiRust"]
