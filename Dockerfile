@@ -1,5 +1,6 @@
-# Etapa 1: Compilación
-FROM rust:1.75-slim as builder
+# Etapa 1: Compilación (Cambiamos a 1.78)
+FROM rust:1.78-slim as builder
+
 # Instalamos dependencias del sistema necesarias para compilar reqwest/openssl
 RUN apt-get update && apt-get install -y \
     pkg-config \
@@ -13,7 +14,6 @@ RUN cargo build --release
 
 # Etapa 2: Ejecución
 FROM debian:bookworm-slim
-# Instalamos certificados para que las llamadas a la API de GitHub funcionen
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     libssl3 \
